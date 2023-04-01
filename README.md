@@ -20,6 +20,16 @@ To edit this repository in MakeCode.
 
 ## Blocks preview
 
+## Motor test
+
+* move forward
+
+```blocks
+input.onButtonPressed(Button.A, () => {
+    CyBit.MotorRun(1, 1, 30);
+    CyBit.MotorRun(2, 1, 30);
+})
+```
 This image shows the blocks code from the last commit in master.
 This image may take a few minutes to refresh.
 
