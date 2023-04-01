@@ -1,1 +1,4 @@
-// tests go here; this will not be compiled when this package is used as an extension.
+input.onButtonPressed(Button.A, () => {
+    CyBit.MotorRun(1, 1, 30);
+    CyBit.MotorRun(2, 1, 30);
+})
