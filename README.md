@@ -20,9 +20,9 @@ To edit this repository in MakeCode.
 
 ## Blocks preview
 
-## Motor test
+## Motor Test
 
-* move forward
+* Move forward
 
 ```blocks
 input.onButtonPressed(Button.A, () => {
@@ -30,8 +30,6 @@ input.onButtonPressed(Button.A, () => {
     CyBit.MotorRun(2, 1, 30);
 })
 ```
-This image shows the blocks code from the last commit in master.
-This image may take a few minutes to refresh.
 
 ![A rendered view of the blocks](https://github.com/princebot-ratthanin/cybit/raw/master/.github/makecode/blocks.png)
 
