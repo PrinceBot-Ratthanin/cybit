@@ -1,10 +1,18 @@
-enum motorSEL {
-    //% block="A"
+enum motorCH {
+    //% block="M1"
     M1,
-    //% block="B"
+    //% block="M2"
     M2,
-    //% block="AB"
-    M12
+    //% block="M3"
+    M3,
+    //% block="M4"
+    M4,
+    //% block="M1+M3"
+    M13,
+    //% block="M2+M4"
+    M24,
+    //% block="ALL"
+    M1234
 }
 enum motorDIR {
     //% block="Forward"
@@ -63,10 +71,19 @@ namespace CyBit {
     let derivative = 0;
     let previous_error = 0;
     export enum analogPort {
+        A0,
         A1,
         A2,
         A3,
-        A4
+        A4,
+        A5,
+        A6,
+        Knob,
+        P0,
+        P1,
+        P2,
+        P4,
+        P10
     }
     export enum digitalPort {
         D1,
@@ -93,22 +110,48 @@ namespace CyBit {
     export function analogRead(selectpin: analogPort): number {
         let _buf4 = pins.createBuffer(4);
         switch (selectpin) {
+            case analogPort.A0:
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 0;
+                pins.i2cWriteBuffer(32, _buf4);
+                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
             case analogPort.A1:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 29;
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 1;
                 pins.i2cWriteBuffer(32, _buf4);
                 return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
             case analogPort.A2:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 28;
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 2;
                 pins.i2cWriteBuffer(32, _buf4);
                 return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
             case analogPort.A3:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 27;
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 4;
                 pins.i2cWriteBuffer(32, _buf4);
                 return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
             case analogPort.A4:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 26;
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 5;
                 pins.i2cWriteBuffer(32, _buf4);
                 return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+            case analogPort.A5:
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 6;
+                pins.i2cWriteBuffer(32, _buf4);
+                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+            case analogPort.A6:
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 7;
+                pins.i2cWriteBuffer(32, _buf4);
+                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+            case analogPort.Knob:
+                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 3;
+                pins.i2cWriteBuffer(32, _buf4);
+                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+            case analogPort.P0:
+                return pins.analogReadPin(AnalogPin.P0);
+            case analogPort.P1:
+                return pins.analogReadPin(AnalogPin.P1);
+            case analogPort.P2:
+                return pins.analogReadPin(AnalogPin.P2);
+            case analogPort.P4:
+                return pins.analogReadPin(AnalogPin.P4);
+            case analogPort.P10:
+                return pins.analogReadPin(AnalogPin.P10);
 
             default:
                 return 0;
@@ -123,34 +166,9 @@ namespace CyBit {
     //% blockId=CyBit_digitalRead
     //% block="digital read |%selectpins|"
     //% weight=99
-    export function digitalRead(selectpins: digitalPort): number {
-        let _buf4 = pins.createBuffer(4);
-        switch (selectpins) {
-            case digitalPort.D1:
-                _buf4[0] = 0xFF; _buf4[1] = 8; _buf4[2] = 29;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-            case digitalPort.D2:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 28;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-            case digitalPort.D3:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 27;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-            case digitalPort.D4:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 26;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-            case digitalPort.D5:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 25;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-            case digitalPort.D6:
-                _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 24;
-                pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
-        }
+    export function digitalRead(selectpins: DigitalPin): number {
+        return pins.digitalReadPin(selectpins);
+        
     }
     /**
      * Write a HIGH or a LOW value to a digital pin.
@@ -160,29 +178,8 @@ namespace CyBit {
     //% blockId=digitalWriteStatus
     //% block="digital write %selectpins | status %Pinstatus "
     //% weight=98
-    export function digitalWrite(selectpins: digitalPort, Status: number): void {
-        let _buf4 = pins.createBuffer(4);
-        switch (selectpins) {
-            case digitalPort.D1:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 29; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-            case digitalPort.D2:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 28; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-            case digitalPort.D3:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 27; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-            case digitalPort.D4:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 26; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-            case digitalPort.D5:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 25; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-            case digitalPort.D6:
-                _buf4[0] = 0xFF; _buf4[1] = 7; _buf4[2] = 24; _buf4[3] = Status;
-                pins.i2cWriteBuffer(32, _buf4);
-
-        }
+    export function digitalWrite(selectpins: DigitalPin, Status: number): void {
+        pins.digitalWritePin(selectpins,Status);
         // body...
     }
 
@@ -190,36 +187,68 @@ namespace CyBit {
     /**MotorON          Control motor channel direction and speed.   
     * @param Speed        Percent of motor speed, eg: 50
     */
-    //% blockId="Motor_MotorRun" block="motor %motorSEL | direction %motorDIR | speed %Speed"
+    //% blockId="Motor_MotorRun" block="motor %motorCH | direction %motorDIR | speed %Speed"
     //% Speed.min=0 Speed.max=100
     //% weight=97
-    export function MotorRun(Channel: motorSEL, Direction: motorDIR, Speed: number): void {
+    export function MotorRun(Channel: motorCH, Direction: motorDIR, Speed: number): void {
         let _buf4 = pins.createBuffer(4);
         if (Speed < 0) { Speed = 0; }
         else if (Speed > 100) { Speed = 100; }
 
-        if (Channel == motorSEL.M1 && Direction == motorDIR.Forward) {
-            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 6; _buf4[3] = Speed;
-            pins.i2cWriteBuffer(32, _buf4);
-        }
-        else if (Channel == motorSEL.M1 && Direction == motorDIR.Reverse) {
-            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 8; _buf4[3] = Speed;
-            pins.i2cWriteBuffer(32, _buf4);
-        }
-        else if (Channel == motorSEL.M2 && Direction == motorDIR.Forward) {
-            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 7; _buf4[3] = Speed;
-            pins.i2cWriteBuffer(32, _buf4);
-        }
-        else if (Channel == motorSEL.M2 && Direction == motorDIR.Reverse) {
-            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 9; _buf4[3] = Speed;
-            pins.i2cWriteBuffer(32, _buf4);
-        }
-        else if (Channel == motorSEL.M12 && Direction == motorDIR.Forward) {
+        if (Channel == motorCH.M1 && Direction == motorDIR.Forward) {
             _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 0; _buf4[3] = Speed;
             pins.i2cWriteBuffer(32, _buf4);
         }
-        else if (Channel == motorSEL.M12 && Direction == motorDIR.Reverse) {
+        else if (Channel == motorCH.M1 && Direction == motorDIR.Reverse) {
             _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 1; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M2 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 2; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M2 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 3; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M3 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 4; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M3 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 5; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M4 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 6; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M4 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 7; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M13 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 8; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M13 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 9; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M24 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 10; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M24 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 11; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M1234 && Direction == motorDIR.Forward) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 12; _buf4[3] = Speed;
+            pins.i2cWriteBuffer(32, _buf4);
+        }
+        else if (Channel == motorCH.M1234 && Direction == motorDIR.Reverse) {
+            _buf4[0] = 0xFF; _buf4[1] = 20; _buf4[2] = 13; _buf4[3] = Speed;
             pins.i2cWriteBuffer(32, _buf4);
         }
     }
@@ -262,30 +291,53 @@ namespace CyBit {
     /**MotorStop.   
     * 
     */
-    //% blockId="Motor_Stop" block="motor Stop %motorSEL"
+    //% blockId="Motor_Stop" block="motor Stop %motorCH"
     //% weight=96
-    export function Motor_Stop(Channel: motorSEL): void {
+    export function Motor_Stop(Channel: motorCH): void {
         led.enable(false)
-        if (Channel == motorSEL.M1) {
+        if (Channel == motorCH.M1) {
             CyBit.MotorRun(1, 2, 0);
-
         }
-        else if (Channel == motorSEL.M2) {
+        else if (Channel == motorCH.M2) {
             CyBit.MotorRun(2, 1, 0);
         }
-        else if (Channel == motorSEL.M12) {
+        else if (Channel == motorCH.M3) {
+            CyBit.MotorRun(3, 1, 0);
+        }
+        else if (Channel == motorCH.M4) {
+            CyBit.MotorRun(4, 1, 0);
+        }
+        else if (Channel == motorCH.M13) {
+            CyBit.MotorRun(1, 1, 0);
+            CyBit.MotorRun(3, 1, 0);
+        }
+        else if (Channel == motorCH.M24) {
+            CyBit.MotorRun(2, 1, 0);
+            CyBit.MotorRun(4, 1, 0);
+        }
+        else if (Channel == motorCH.M1234) {
             CyBit.MotorRun(1, 1, 0);
             CyBit.MotorRun(2, 1, 0);
+            CyBit.MotorRun(3, 1, 0);
+            CyBit.MotorRun(4, 1, 0);
         }
     }
     export function Motor(_ch: number, _Speed: number): void {
         if (_ch == 1) {
-            if (_Speed >= 0) { CyBit.MotorRun(motorSEL.M1, motorDIR.Forward, _Speed); }
-            else { CyBit.MotorRun(motorSEL.M1, motorDIR.Reverse, Math.abs(_Speed)); }
+            if (_Speed >= 0) { CyBit.MotorRun(motorCH.M1, motorDIR.Forward, _Speed); }
+            else { CyBit.MotorRun(motorCH.M1, motorDIR.Reverse, Math.abs(_Speed)); }
         }
         else if (_ch == 2) {
-            if (_Speed >= 0) { CyBit.MotorRun(motorSEL.M2, motorDIR.Forward, _Speed); }
-            else { CyBit.MotorRun(motorSEL.M2, motorDIR.Reverse, Math.abs(_Speed)); }
+            if (_Speed >= 0) { CyBit.MotorRun(motorCH.M2, motorDIR.Forward, _Speed); }
+            else { CyBit.MotorRun(motorCH.M2, motorDIR.Reverse, Math.abs(_Speed)); }
+        }
+        else if (_ch == 3) {
+            if (_Speed >= 0) { CyBit.MotorRun(motorCH.M3, motorDIR.Forward, _Speed); }
+            else { CyBit.MotorRun(motorCH.M3, motorDIR.Reverse, Math.abs(_Speed)); }
+        }
+        else if (_ch == 4) {
+            if (_Speed >= 0) { CyBit.MotorRun(motorCH.M4, motorDIR.Forward, _Speed); }
+            else { CyBit.MotorRun(motorCH.M4, motorDIR.Reverse, Math.abs(_Speed)); }
         }
     }
 
@@ -310,23 +362,18 @@ namespace CyBit {
     //% Degree.min=0 Degree.max=180
     //% weight=93
     export function ServoRun(selectpins: servoPort, Degree: number): void {
-        let _buf4 = pins.createBuffer(4);
+            
         if (selectpins == servoPort.S1) {
-            _buf4[0] = 0xFF; _buf4[1] = 70; _buf4[2] = Degree;
-            pins.i2cWriteBuffer(32, _buf4);
-            // pins.servoWritePin(AnalogPin.P13, Degree)
+            pins.servoWritePin(AnalogPin.P13, Degree)
         }
         if (selectpins == servoPort.S2) {
-            _buf4[0] = 0xFF; _buf4[1] = 71; _buf4[2] = Degree;
-            pins.i2cWriteBuffer(32, _buf4);
+            pins.servoWritePin(AnalogPin.P14, Degree)
         }
         if (selectpins == servoPort.S3) {
-            _buf4[0] = 0xFF; _buf4[1] = 72; _buf4[2] = Degree;
-            pins.i2cWriteBuffer(32, _buf4);
+            pins.servoWritePin(AnalogPin.P15, Degree)
         }
         if (selectpins == servoPort.S4) {
-            _buf4[0] = 0xFF; _buf4[1] = 73; _buf4[2] = Degree;
-            pins.i2cWriteBuffer(32, _buf4);
+            pins.servoWritePin(AnalogPin.P16, Degree)
         }
 
     }
