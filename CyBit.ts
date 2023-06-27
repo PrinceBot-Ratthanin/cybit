@@ -167,7 +167,7 @@ namespace CyBit {
     //% block="digital read |%selectpins|"
     //% weight=99
     export function digitalRead(selectpins: DigitalPin): number {
-        led.enable(false)
+        led.enable(false);
         return pins.digitalReadPin(selectpins);
         
     }
@@ -180,7 +180,7 @@ namespace CyBit {
     //% block="digital write %selectpins | status %Pinstatus "
     //% weight=98
     export function digitalWrite(selectpins: DigitalPin, Status: number): void {
-        led.enable(false)
+        led.enable(false);
         pins.digitalWritePin(selectpins,Status);
         // body...
     }
