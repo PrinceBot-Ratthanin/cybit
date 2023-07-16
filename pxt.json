@@ -1,6 +1,6 @@
 {
     "name": "Cybit",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "description": "",
     "dependencies": {
         "core": "*",
@@ -10,8 +10,7 @@
     },
     "files": [
         "README.md",
-        "CyBit.ts",
-        "main.py"
+        "CyBit.ts"
     ],
     "testFiles": [
         "test.ts"
