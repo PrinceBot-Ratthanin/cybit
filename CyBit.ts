@@ -78,6 +78,7 @@ namespace CyBit {
     let Color_Line = 0;  //0 = black, 1 = white 
     let minValue = [1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023];
     let maxValue = [0, 0, 0, 0, 0, 0, 0, 0];
+    let pinsensor = [0, 0, 0, 0, 0, 0, 0, 0];
     let Num_Sensor = 0;
     let _lastPosition = 0;
     let returnValue = 0;
@@ -425,15 +426,21 @@ namespace CyBit {
     /**
      * TODO: describe your function here
      * @param e describe parameter here
+     * @param SensorRead Value of Sensor; eg: 0
      */
     //% block
+    //% blockId=Set_Line_Color block=" Set_Line_Color=%lineColor|Pin=%SensorRead|"
     //% weight=90
-    export function Set_Line_Color(e: lineColor): void {
+    export function Set_Line_Color(e: lineColor ,SensorRead: number[]): void {
+        Num_Sensor = SensorRead.length;
         if (e == lineColor.Black) {
             Color_Line = 0;
         }
         else {
             Color_Line = 1;
+        }
+        for (let i = 0; i < Num_Sensor;i++ ){
+
         }
         // Add code here
     }
@@ -445,6 +452,7 @@ namespace CyBit {
     //% blockId=Calibrate_Sensor block=" Calibrate_Sensor|Round=%Roundforcal|Pin%SensorRead|"
     //% weight=89
     export function Calibrate_Sensor(Roundforcal: number, SensorRead: number[]): void {
+        Num_Sensor = SensorRead.length;
         for (let i = 0; i < Roundforcal; i++) {
             for (let numSen = 0; numSen < Num_Sensor; numSen++) {
                 if (SensorRead[numSen] < minValue[numSen]) {
@@ -536,7 +544,7 @@ namespace CyBit {
         if (Color_Line == 0) {
             for (let numSen = 0; numSen < Num_Sensor; numSen++) {
                 let value = Math.map(SensorRead[numSen], minValue[numSen], maxValue[numSen], 100, 0);
-                if (value > 30) {
+                if (value > 20) {
                     ON_Line = 1;
                 }
                 if (value > 5) {
@@ -548,7 +556,7 @@ namespace CyBit {
         else {
             for (let numSen2 = 0; numSen2 < Num_Sensor; numSen2++) {
                 let value2 = Math.map(SensorRead[numSen2], minValue[numSen2], maxValue[numSen2], 0, 100);
-                if (value2 > 30) {
+                if (value2 > 20) {
                     ON_Line = 1;
                 }
                 if (value2 > 5) {
