@@ -1,3 +1,11 @@
+enum PingUnit {
+    //% block="μs"
+    MicroSeconds,
+    //% block="cm"
+    Centimeters,
+    //% block="inches"
+    Inches
+}
 enum motorCH {
     //% block="M1"
     M1,
@@ -184,6 +192,34 @@ namespace CyBit {
         pins.digitalWritePin(selectpins,Status);
         // body...
     }
+    /**
+     * Send a ping and get the echo time (in microseconds) as a result
+     * @param trig tigger pin
+     * @param echo echo pin
+     * @param unit desired conversion unit
+     * @param maxCmDistance maximum distance in centimeters (default is 500)
+     */
+    //% blockId=sonar_ping
+    //% block="ping trig %trig|echo %echo|unit %unit"
+    //% weight=97
+    export function ping(trig: DigitalPin, echo: DigitalPin, unit: PingUnit, maxCmDistance = 500): number {
+        // send pulse
+        pins.setPull(trig, PinPullMode.PullNone);
+        pins.digitalWritePin(trig, 0);
+        control.waitMicros(2);
+        pins.digitalWritePin(trig, 1);
+        control.waitMicros(10);
+        pins.digitalWritePin(trig, 0);
+
+        // read pulse
+        const d = pins.pulseIn(echo, PulseValue.High, maxCmDistance * 58);
+
+        switch (unit) {
+            case PingUnit.Centimeters: return Math.idiv(d, 58);
+            case PingUnit.Inches: return Math.idiv(d, 148);
+            default: return d;
+        }
+    }
 
 
     /**MotorON          Control motor channel direction and speed.   
@@ -191,7 +227,7 @@ namespace CyBit {
     */
     //% blockId="Motor_MotorRun" block="motor %motorCH | direction %motorDIR | speed %Speed"
     //% Speed.min=0 Speed.max=100
-    //% weight=97
+    //% weight=96
     export function MotorRun(Channel: motorCH, Direction: motorDIR, Speed: number): void {
         let _buf4 = pins.createBuffer(4);
         if (Speed < 0) { Speed = 0; }
@@ -261,7 +297,7 @@ namespace CyBit {
     */
     //% blockId="Motor_Turn" block="motor_turn direction %motorTurn | speed %Speed"
     //% Speed.min=0 Speed.max=100
-    //% weight=96
+    //% weight=95
     export function Motor_turn(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
             CyBit.MotorRun(1, 1, 0);
@@ -278,7 +314,7 @@ namespace CyBit {
     */
     //% blockId="Motor_spin" block="motor_spin direction %motorTurn | speed %Speed"
     //% Speed.min=0 Speed.max=100
-    //% weight=95
+    //% weight=94
     export function Motor_spin(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
             CyBit.MotorRun(1, 2, Speed);
@@ -294,7 +330,7 @@ namespace CyBit {
     * 
     */
     //% blockId="Motor_Stop" block="motor Stop %motorCH"
-    //% weight=96
+    //% weight=93
     export function Motor_Stop(Channel: motorCH): void {
         led.enable(false)
         if (Channel == motorCH.M1) {
@@ -350,7 +386,7 @@ namespace CyBit {
     //% pausetime.min=1  pausetime.max=100000
     //% blockId=Motor_TimePAUSE block="pause | %pausetime | mS"
     //% color=#0033cc
-    //% weight=94
+    //% weight=92
     export function TimePAUSE(pausetime: number): void {
         basic.pause(pausetime)
     }
@@ -362,7 +398,7 @@ namespace CyBit {
 
     //% blockId="NKP_ServoRun" block="Servo %Servo|degree %Degree"
     //% Degree.min=0 Degree.max=180
-    //% weight=93
+    //% weight=91
     export function ServoRun(selectpins: servoPort, Degree: number): void {
             
         if (selectpins == servoPort.S1) {
@@ -385,7 +421,7 @@ namespace CyBit {
      * @param e describe parameter here
      */
     //% block
-    //% weight=92
+    //% weight=90
     export function Set_Line_Color(e: lineColor): void {
         if (e == lineColor.Black) {
             Color_Line = 0;
@@ -402,7 +438,7 @@ namespace CyBit {
   * 
   */
     //% blockId=Set_Min_Value block="Set_Min_Value %min1|"
-    //% weight=80
+    //% weight=89
     export function Set_Min_Value(min1: number[]): void {
         Num_Sensor = min1.length;
         for (let NumOfSensor = 0; NumOfSensor < min1.length; NumOfSensor++) {
@@ -417,7 +453,7 @@ namespace CyBit {
   * 
   */
     //% blockId=Set_Max_Value block="Set_Max_Value %max1|"
-    //% weight=80
+    //% weight=88
     export function Set_Max_Value(max1: number[]): void {
         Num_Sensor = max1.length;
         for (let NumOfSensor2 = 0; NumOfSensor2 < max1.length; NumOfSensor2++) {
