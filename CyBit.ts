@@ -442,7 +442,7 @@ namespace CyBit {
      * @param Roundforcal round for Calibrate_Sensor; eg: 200
      * @param SensorRead Value of Sensor; eg: 0
      */
-    //% blockId=PID block=" Calibrate_Sensor|Round=%Roundforcal|Pin%SensorRead|"
+    //% blockId=Calibrate_Sensor block=" Calibrate_Sensor|Round=%Roundforcal|Pin%SensorRead|"
     //% weight=89
     export function Calibrate_Sensor(Roundforcal: number, SensorRead: number[]): void {
         for (let i = 0; i < Roundforcal; i++) {
