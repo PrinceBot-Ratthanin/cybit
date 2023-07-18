@@ -52,6 +52,12 @@ enum Turn {
     //% block="right"
     Right
 }
+enum Transmissions {
+    //% block="2WD"
+    Haft,
+    //% block="4WD"
+    Full
+}
 enum Servo {
 
     //% block="P13"
@@ -70,7 +76,7 @@ enum Servo {
 //% weight=10 color=#ff9900 weight=10 icon="\uf11b"
 namespace CyBit {
     let Color_Line = 0;  //0 = black, 1 = white 
-    let minValue = [0, 0, 0, 0, 0, 0, 0, 0];
+    let minValue = [1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023];
     let maxValue = [0, 0, 0, 0, 0, 0, 0, 0];
     let Num_Sensor = 0;
     let _lastPosition = 0;
@@ -200,7 +206,7 @@ namespace CyBit {
      * @param maxCmDistance maximum distance in centimeters (default is 500)
      */
     //% blockId=sonar_ping
-    //% block="ping trig %trig|echo %echo|unit %unit"
+    //% block="Ultrasonic= trig %trig|echo %echo|unit %unit"
     //% weight=97
     export function ping(trig: DigitalPin, echo: DigitalPin, unit: PingUnit, maxCmDistance = 500): number {
         // send pulse
@@ -431,6 +437,26 @@ namespace CyBit {
         }
         // Add code here
     }
+    /**
+     * TODO: describe your function here
+     * @param Roundforcal round for Calibrate_Sensor; eg: 200
+     * @param SensorRead Value of Sensor; eg: 0
+     */
+    //% blockId=PID block=" Calibrate_Sensor|Round=%Roundforcal|Pin%SensorRead|"
+    //% weight=89
+    export function Calibrate_Sensor(Roundforcal: number, SensorRead: number[]): void {
+        for (let i = 0; i < Roundforcal; i++) {
+            for (let numSen = 0; numSen < Num_Sensor; numSen++) {
+                if (SensorRead[numSen] < minValue[numSen]) {
+                    minValue[numSen] = SensorRead[numSen];
+                }
+                else if (SensorRead[numSen] > maxValue[numSen]) {
+                    maxValue[numSen] = SensorRead[numSen];
+                }
+            }
+        }
+
+    }
 
     /**
   * Set_Min_Value
@@ -438,7 +464,7 @@ namespace CyBit {
   * 
   */
     //% blockId=Set_Min_Value block="Set_Min_Value %min1|"
-    //% weight=89
+    //% weight=88
     export function Set_Min_Value(min1: number[]): void {
         Num_Sensor = min1.length;
         for (let NumOfSensor = 0; NumOfSensor < min1.length; NumOfSensor++) {
@@ -453,7 +479,7 @@ namespace CyBit {
   * 
   */
     //% blockId=Set_Max_Value block="Set_Max_Value %max1|"
-    //% weight=88
+    //% weight=87
     export function Set_Max_Value(max1: number[]): void {
         Num_Sensor = max1.length;
         for (let NumOfSensor2 = 0; NumOfSensor2 < max1.length; NumOfSensor2++) {
@@ -462,23 +488,37 @@ namespace CyBit {
         // Add code here
     }
 
-
-
     /**
-     * TODO: describe your function here
-     * @param value describe value here, eg: 0
+     * @param selectTran select Transmission for drive motor;
+     * @param Kp Value of Sensor; eg: 1
+     * @param Kd Value of Sensor; eg: 0
+     * @param _Speed Value of Sensor; eg: 50
      */
-    //% block
-    export function ReadMin(value: number): number {
-        return minValue[value];
-    }
-    /**
-     * TODO: describe your function here
-     * @param value describe value here, eg: 0
-     */
-    //% block
-    export function ReadMax(value: number): number {
-        return maxValue[value];
+    //% blockId=PID block=" PID Function |%selectTran|speed%_Speed|KP%kp|KD%kd|Pin%SensorRead|"
+    //% weight=86
+    export function PID(Transmission: Transmissions, _Speed: number, kp: number, kd: number, SensorRead: number[]): void {
+        Num_Sensor = SensorRead.length;
+        let setpoint = ((Num_Sensor - 1) / 2) * 100;
+        let errors = setpoint - CyBit.Read_Position(SensorRead);
+        integral = integral + errors;
+        derivative = (errors - previous_error);
+        let output = kp * errors + kd * derivative;
+        let speed_motor = _Speed;
+        if (output > 100) { output = 100; }
+        else if (output < -100) { output = -100; }
+        if (Transmission == Transmissions.Haft) {
+            Motor(1, speed_motor - output);
+            Motor(2, speed_motor + output);
+        }
+        else if (Transmission == Transmissions.Full) {
+            Motor(1, speed_motor - output);
+            Motor(3, speed_motor - output);
+            Motor(2, speed_motor + output);
+            Motor(4, speed_motor + output);
+        }
+        previous_error = errors;
+
+        //return kp * errors + kd * derivative;
     }
 
 
@@ -487,6 +527,7 @@ namespace CyBit {
      * @param SensorRead Value of Sensor; eg: 0
      */
     //% blockId=Read_Position block="Read_Position %SensorRead|"
+    //% weight=85
     export function Read_Position(SensorRead: number[]): number {
         let ON_Line = 0;
         let avg = 0;
@@ -495,7 +536,7 @@ namespace CyBit {
         if (Color_Line == 0) {
             for (let numSen = 0; numSen < Num_Sensor; numSen++) {
                 let value = Math.map(SensorRead[numSen], minValue[numSen], maxValue[numSen], 100, 0);
-                if (value > 20) {
+                if (value > 30) {
                     ON_Line = 1;
                 }
                 if (value > 5) {
@@ -507,7 +548,7 @@ namespace CyBit {
         else {
             for (let numSen2 = 0; numSen2 < Num_Sensor; numSen2++) {
                 let value2 = Math.map(SensorRead[numSen2], minValue[numSen2], maxValue[numSen2], 0, 100);
-                if (value2 > 200) {
+                if (value2 > 30) {
                     ON_Line = 1;
                 }
                 if (value2 > 5) {
@@ -528,26 +569,29 @@ namespace CyBit {
         return (_lastPosition);
     }
 
-    /**
-     * @param Kp Value of Sensor; eg: 1
-     * @param Kd Value of Sensor; eg: 0
-     * @param _Speed Value of Sensor; eg: 50
-     */
-    //% blockId=PID block=" PID Function speed%_Speed|KP%kp|KD%kd|Pin%SensorRead|"
-    export function PID(_Speed: number, kp: number, kd: number, SensorRead: number[]): void {
-        Num_Sensor = SensorRead.length;
-        let setpoint = ((Num_Sensor - 1) / 2) * 100;
-        let errors = setpoint - CyBit.Read_Position(SensorRead);
-        integral = integral + errors;
-        derivative = (errors - previous_error);
-        let output = kp * errors + kd * derivative;
-        let speed_motor = _Speed;
-        if (output > 100) { output = 100; }
-        else if (output < -100) { output = -100; }
-        Motor(1, speed_motor - output);
-        Motor(2, speed_motor + output);
-        previous_error = errors;
 
-        //return kp * errors + kd * derivative;
+
+
+    /**
+     * TODO: describe your function here
+     * @param value describe value here, eg: 0
+     */
+    //% block
+    //% weight=84
+    export function ReadMin(value: number): number {
+        return minValue[value];
     }
+    /**
+     * TODO: describe your function here
+     * @param value describe value here, eg: 0
+     */
+    //% block
+    //% weight=83
+    export function ReadMax(value: number): number {
+        return maxValue[value];
+    }
+    
+
+
+    
 }
