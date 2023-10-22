@@ -10,13 +10,14 @@
     },
     "files": [
         "README.md",
-        "CyBit.ts"
+        "CyBit.ts",
+        "TCS34275.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
     "targetVersions": {
-        "target": "6.0.15",
+        "target": "6.0.19",
         "targetId": "microbit"
     },
     "supportedTargets": [

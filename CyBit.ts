@@ -128,45 +128,45 @@ namespace CyBit {
             case analogPort.A0:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 0;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A1:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 1;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A2:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 2;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A3:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 4;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A4:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 5;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A5:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 6;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.A6:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 7;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.Knob:
                 _buf4[0] = 0xFF; _buf4[1] = 9; _buf4[2] = 3;
                 pins.i2cWriteBuffer(32, _buf4);
-                return pins.i2cReadNumber(32, NumberFormat.UInt16LE, false);
+                return Math.round(pins.i2cReadNumber(32, NumberFormat.UInt16LE, false));
             case analogPort.P0:
-                return pins.analogReadPin(AnalogPin.P0);
+                return Math.round(pins.analogReadPin(AnalogPin.P0));
             case analogPort.P1:
-                return pins.analogReadPin(AnalogPin.P1);
+                return Math.round(pins.analogReadPin(AnalogPin.P1));
             case analogPort.P2:
-                return pins.analogReadPin(AnalogPin.P2);
+                return Math.round(pins.analogReadPin(AnalogPin.P2));
             case analogPort.P4:
-                return pins.analogReadPin(AnalogPin.P4);
+                return Math.round(pins.analogReadPin(AnalogPin.P4));
             case analogPort.P10:
-                return pins.analogReadPin(AnalogPin.P10);
+                return Math.round(pins.analogReadPin(AnalogPin.P10));
 
             default:
                 return 0;
@@ -315,6 +315,26 @@ namespace CyBit {
             CyBit.MotorRun(2, 1, 0);
         }
     }
+    /**MotorTurn_4WD.   
+    * @param Speed        Percent of motor speed, eg: 50
+    */
+    //% blockId="Motor_Turn_4WD" block="4WD motor_turn direction %motorTurn | speed %Speed"
+    //% Speed.min=0 Speed.max=100
+    //% weight=95
+    export function Motor_turn_4WD(Direction: motorTurn, Speed: number): void {
+        if (Direction == motorTurn.Left) {
+            CyBit.MotorRun(1, 1, 0);
+            CyBit.MotorRun(3, 1, 0);
+            CyBit.MotorRun(2, 1, Speed);
+            CyBit.MotorRun(4, 1, Speed);
+        }
+        else if (Direction == motorTurn.Right) {
+            CyBit.MotorRun(1, 1, Speed);
+            CyBit.MotorRun(3, 1, Speed);
+            CyBit.MotorRun(2, 1, 0);
+            CyBit.MotorRun(4, 1, 0);
+        }
+    }
 
     /**MotorSpin.   
     * @param Speed        Percent of motor speed, eg: 50
@@ -330,6 +350,27 @@ namespace CyBit {
         else if (Direction == motorTurn.Right) {
             CyBit.MotorRun(1, 1, Speed);
             CyBit.MotorRun(2, 2, Speed);
+        }
+    }
+
+    /**MotorSpin_4WD   
+    * @param Speed        Percent of motor speed, eg: 50
+    */
+    //% blockId="Motor_spin_4WD" block="4WD motor_spin direction %motorTurn | speed %Speed"
+    //% Speed.min=0 Speed.max=100
+    //% weight=94
+    export function Motor_spin_4WD(Direction: motorTurn, Speed: number): void {
+        if (Direction == motorTurn.Left) {
+            CyBit.MotorRun(1, 2, Speed);
+            CyBit.MotorRun(3, 2, Speed);
+            CyBit.MotorRun(2, 1, Speed);
+            CyBit.MotorRun(4, 1, Speed);
+        }
+        else if (Direction == motorTurn.Right) {
+            CyBit.MotorRun(1, 1, Speed);
+            CyBit.MotorRun(3, 1, Speed);
+            CyBit.MotorRun(2, 2, Speed);
+            CyBit.MotorRun(4, 2, Speed);
         }
     }
 
