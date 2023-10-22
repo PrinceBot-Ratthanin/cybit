@@ -11,7 +11,8 @@
     "files": [
         "README.md",
         "CyBit.ts",
-        "TCS34275.ts"
+        "TCS34275.ts",
+        "tutorial-info-cache.json"
     ],
     "testFiles": [
         "test.ts"
