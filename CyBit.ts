@@ -34,6 +34,12 @@ enum motorTurn {
     //% block="Right"
     Right
 }
+enum MotorSpin {
+    //% block="Left"
+    Left,
+    //% block="Right"
+    Right
+}
 enum lineColor {
     //% block="Black"
     Black,
@@ -307,12 +313,14 @@ namespace CyBit {
     //% weight=95
     export function Motor_turn(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
-            CyBit.MotorRun(1, 1, 0);
-            CyBit.MotorRun(2, 1, Speed);
+            //CyBit.MotorRun(1, 1, 0);
+            //CyBit.MotorRun(2, 1, Speed);
+            Motor(1,0);
+            Motor(2, Speed);
         }
         else if (Direction == motorTurn.Right) {
-            CyBit.MotorRun(1, 1, Speed);
-            CyBit.MotorRun(2, 1, 0);
+            Motor(1, Speed);
+            Motor(2, 0);
         }
     }
     /**MotorTurn_4WD.   
@@ -323,16 +331,16 @@ namespace CyBit {
     //% weight=95
     export function Motor_turn_4WD(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
-            CyBit.MotorRun(1, 1, 0);
-            CyBit.MotorRun(3, 1, 0);
-            CyBit.MotorRun(2, 1, Speed);
-            CyBit.MotorRun(4, 1, Speed);
+            Motor(1, 0);
+            Motor(3, 0);
+            Motor(2, Speed);
+            Motor(4, Speed);
         }
         else if (Direction == motorTurn.Right) {
-            CyBit.MotorRun(1, 1, Speed);
-            CyBit.MotorRun(3, 1, Speed);
-            CyBit.MotorRun(2, 1, 0);
-            CyBit.MotorRun(4, 1, 0);
+            Motor(1, Speed);
+            Motor(3, Speed);
+            Motor(2, 0);
+            Motor(4, 0);
         }
     }
 
@@ -344,12 +352,12 @@ namespace CyBit {
     //% weight=94
     export function Motor_spin(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
-            CyBit.MotorRun(1, 2, Speed);
-            CyBit.MotorRun(2, 1, Speed);
+            Motor(1, -Speed);
+            Motor(2, Speed);
         }
         else if (Direction == motorTurn.Right) {
-            CyBit.MotorRun(1, 1, Speed);
-            CyBit.MotorRun(2, 2, Speed);
+            Motor(1, Speed);
+            Motor(2, -Speed);
         }
     }
 
@@ -361,16 +369,16 @@ namespace CyBit {
     //% weight=94
     export function Motor_spin_4WD(Direction: motorTurn, Speed: number): void {
         if (Direction == motorTurn.Left) {
-            CyBit.MotorRun(1, 2, Speed);
-            CyBit.MotorRun(3, 2, Speed);
-            CyBit.MotorRun(2, 1, Speed);
-            CyBit.MotorRun(4, 1, Speed);
+            Motor(1, -Speed);
+            Motor(3, -Speed);
+            Motor(2, Speed);
+            Motor(4, Speed);
         }
         else if (Direction == motorTurn.Right) {
-            CyBit.MotorRun(1, 1, Speed);
-            CyBit.MotorRun(3, 1, Speed);
-            CyBit.MotorRun(2, 2, Speed);
-            CyBit.MotorRun(4, 2, Speed);
+            Motor(1, Speed);
+            Motor(3, Speed);
+            Motor(2, -Speed);
+            Motor(4, -Speed);
         }
     }
 
